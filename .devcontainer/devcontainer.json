@@ -1,24 +1,34 @@
 {
-  "name": "lametric-py",
-  "image": "mcr.microsoft.com/devcontainers/python:3.14",
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "ms-python.python",
-        "ms-python.vscode-pylance",
-        "ms-python.debugpy",
-        "charliermarsh.ruff",
-        "ms-python.black-formatter"
-      ],
-      "settings": {
-        "python.defaultInterpreterPath": "/usr/local/bin/python",
-        "editor.formatOnSave": true,
-        "[python]": {
-          "editor.defaultFormatter": "ms-python.black-formatter"
+    "name": "Python 3.14 Production Environment",
+    "image": "mcr.microsoft.com/devcontainers/python:3.14",
+    
+    "features": {
+        "ghcr.io/devcontainers-contrib/features/uv:1": {}
+    },
+
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.analysis.typeCheckingMode": "strict",
+                "editor.formatOnSave": true,
+                "editor.codeActionsOnSave": {
+                    "source.fixAll.ruff": "always",
+                    "source.organizeImports.ruff": "always"
+                },
+                "python.testing.pytestEnabled": true,
+                "python.testing.pytestArgs": ["tests"]
+            },
+            "extensions": [
+                "charliermarsh.ruff",
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-python.debugpy"
+            ]
         }
-      }
-    }
-  },
-  "postCreateCommand": "pip install --upgrade pip && pip install pytest ruff black pylint",
-  "remoteUser": "vscode"
+    },
+
+    "postCreateCommand": "uv sync && pre-commit install",
+    
+    "remoteUser": "vscode"
 }
