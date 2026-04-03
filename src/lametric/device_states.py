@@ -67,7 +67,7 @@ class Screensaver(DataClassORJSONMixin):
 class DeviceAudioState(DataClassORJSONMixin):
     """Audio capabilities and current volume-related settings."""
 
-    available: bool
+    available: bool = True
     # Fields are only present in the API response when audio is available
     volume: int | None = None
     volume_range: IntRange | None = None
@@ -78,7 +78,7 @@ class DeviceAudioState(DataClassORJSONMixin):
 class DeviceBluetoothState(DataClassORJSONMixin):
     """Bluetooth capabilities and runtime state."""
 
-    available: bool
+    available: bool = True
     # Fields are only present in the API response when Bluetooth is available
     active: bool | None = None
     discoverable: bool | None = None
@@ -146,8 +146,8 @@ class DeviceState(DataClassORJSONMixin):
     display: DeviceDisplayState
     wifi: DeviceWiFiState
     # Renamed field to be more descriptive
-    update: DeviceSoftwareUpdate = field(
-        metadata=field_options(alias="update_available")
+    update: DeviceSoftwareUpdate | None = field(
+        default=None, metadata=field_options(alias="update_available")
     )
 
     class Config(BaseConfig):
