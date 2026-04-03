@@ -57,7 +57,10 @@ jobs:
       - name: Set up Python 3.14
         run: uv python install 3.14
   
-      - name: Python Semantic Release
-        uses: python-semantic-release/python-semantic-release@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install dependencies (incl. semantic-release)
+        run: uv sync --locked --dev
+  
+      - name: Semantic Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: uv run semantic-release version
