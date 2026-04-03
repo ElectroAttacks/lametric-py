@@ -96,11 +96,9 @@ def test_send_stream_data_builds_lmsp_packet_from_stream_state(
             socket=fake_socket_factory,
         ),
     )
+    monkeypatch.setattr("src.device.asyncio.get_running_loop", lambda: FakeLoop())
     monkeypatch.setattr(
-        "src.device.asyncio.get_running_loop", lambda: FakeLoop())
-    monkeypatch.setattr(
-        LaMetricDevice, "stream_state", property(
-            lambda _self: fake_stream_state())
+        LaMetricDevice, "stream_state", property(lambda _self: fake_stream_state())
     )
 
     async def run() -> None:

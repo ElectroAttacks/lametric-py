@@ -1,4 +1,3 @@
-
 """Data models for LaMetric app metadata and configuration."""
 
 from __future__ import annotations

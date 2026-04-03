@@ -24,9 +24,11 @@ class ScreensaverConfigParams(DataClassORJSONMixin):
 
     enabled: bool
     start_time_gmt: datetime | None = field(
-        default=None, metadata=field_options(alias="start_time"))
+        default=None, metadata=field_options(alias="start_time")
+    )
     end_time_gmt: datetime | None = field(
-        default=None, metadata=field_options(alias="end_time"))
+        default=None, metadata=field_options(alias="end_time")
+    )
 
     class Config(BaseConfig):
         serialize_by_alias = True

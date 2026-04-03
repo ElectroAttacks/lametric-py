@@ -1,11 +1,9 @@
 {
     "name": "lametric-py",
     "image": "mcr.microsoft.com/devcontainers/python:3.14",
-    
     "features": {
-        "ghcr.io/devcontainers-contrib/features/uv:1": {}
+        "ghcr.io/devcontainers-extra/features/uv:1": {}
     },
-
     "customizations": {
         "vscode": {
             "settings": {
@@ -17,7 +15,9 @@
                     "source.organizeImports.ruff": "always"
                 },
                 "python.testing.pytestEnabled": true,
-                "python.testing.pytestArgs": ["tests"]
+                "python.testing.pytestArgs": [
+                    "tests"
+                ]
             },
             "extensions": [
                 "cschleiden.vscode-github-actions",
@@ -29,8 +29,6 @@
             ]
         }
     },
-
-    "postCreateCommand": "uv sync && pre-commit install",
-    
+    "postCreateCommand": "uv sync --dev && uv run pre-commit install",
     "remoteUser": "vscode"
 }

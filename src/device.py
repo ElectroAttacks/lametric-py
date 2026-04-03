@@ -38,16 +38,10 @@ class LaMetricDevice:
     _close_session: bool = False
 
     @backoff.on_exception(
-        backoff.expo,
-        LaMetricConnectionError,
-        max_tries=3,
-        logger=logger
+        backoff.expo, LaMetricConnectionError, max_tries=3, logger=logger
     )
     async def _handle_api_request(
-        self,
-        uri: str,
-        method: str = hdrs.METH_GET,
-        data: dict[str, Any] | None = None
+        self, uri: str, method: str = hdrs.METH_GET, data: dict[str, Any] | None = None
     ) -> Any:
         """Execute an authenticated HTTPS request and return the parsed JSON body.
 
@@ -71,7 +65,7 @@ class LaMetricDevice:
                     headers={"Accept": "application/json"},
                     json=data,
                     raise_for_status=True,
-                    ssl=False
+                    ssl=False,
                 )
 
             content_type = response.headers.get(hdrs.CONTENT_TYPE, "")
@@ -79,14 +73,13 @@ class LaMetricDevice:
             if "application/json" not in content_type:
                 raise LaMetricApiError(
                     response.status,
-                    {"content_type": content_type, "content": await response.text()}
+                    {"content_type": content_type, "content": await response.text()},
                 )
 
             return await response.json()
 
         except TimeoutError as error:
-            raise LaMetricConnectionError(
-                f"Request to {url} timed out") from error
+            raise LaMetricConnectionError(f"Request to {url} timed out") from error
 
         except aiohttp.ClientResponseError as error:
             if error.status in (401, 403):
@@ -133,8 +126,7 @@ class LaMetricDevice:
         response = await self._handle_api_request(uri="/api/v2/device/notifications")
 
         return [
-            Notification.from_dict(notification_data)
-            for notification_data in response
+            Notification.from_dict(notification_data) for notification_data in response
         ]
 
     @property
@@ -157,11 +149,11 @@ class LaMetricDevice:
         return StreamState.from_dict(response)
 
     async def set_display(
-            self,
-            on: bool | None = None,
-            brightness: int | None = None,
-            brightness_mode: BrightnessMode | None = None,
-            screensaver_config: ScreensaverConfig | None = None
+        self,
+        on: bool | None = None,
+        brightness: int | None = None,
+        brightness_mode: BrightnessMode | None = None,
+        screensaver_config: ScreensaverConfig | None = None,
     ) -> None:
         """Update display settings. Only provided arguments are sent."""
 
@@ -183,24 +175,18 @@ class LaMetricDevice:
             return
 
         await self._handle_api_request(
-            uri="/api/v2/device/display",
-            method=hdrs.METH_PUT,
-            data=data
+            uri="/api/v2/device/display", method=hdrs.METH_PUT, data=data
         )
 
     async def set_audio(self, volume: int) -> None:
         """Set the device speaker volume (0–100)."""
 
         await self._handle_api_request(
-            uri="/api/v2/device/audio",
-            method=hdrs.METH_PUT,
-            data={"volume": volume}
+            uri="/api/v2/device/audio", method=hdrs.METH_PUT, data={"volume": volume}
         )
 
     async def set_bluetooth(
-            self,
-            active: bool | None = None,
-            name: str | None = None
+        self, active: bool | None = None, name: str | None = None
     ) -> None:
         """Update Bluetooth settings. Only provided arguments are sent."""
 
@@ -216,9 +202,7 @@ class LaMetricDevice:
             return
 
         await self._handle_api_request(
-            uri="/api/v2/device/bluetooth",
-            method=hdrs.METH_PUT,
-            data=data
+            uri="/api/v2/device/bluetooth", method=hdrs.METH_PUT, data=data
         )
 
     async def get_installed_app(self, app_id: str) -> App:
@@ -230,15 +214,13 @@ class LaMetricDevice:
     async def activate_next_app(self) -> None:
         """Switch the display to the next app."""
         await self._handle_api_request(
-            uri="/api/v2/device/apps/next",
-            method=hdrs.METH_PUT
+            uri="/api/v2/device/apps/next", method=hdrs.METH_PUT
         )
 
     async def activate_previous_app(self) -> None:
         """Switch the display to the previous app."""
         await self._handle_api_request(
-            uri="/api/v2/device/apps/prev",
-            method=hdrs.METH_PUT
+            uri="/api/v2/device/apps/prev", method=hdrs.METH_PUT
         )
 
     async def activate_widget(self, app_id: str, widget_id: str) -> None:
@@ -254,7 +236,7 @@ class LaMetricDevice:
         widget_id: str,
         action_id: str,
         action_parameters: dict[str, Any] | None = None,
-        visible: bool = True
+        visible: bool = True,
     ) -> None:
         """Trigger an action on a widget, optionally bringing it to the foreground."""
 
@@ -266,7 +248,7 @@ class LaMetricDevice:
         await self._handle_api_request(
             uri=f"/api/v2/device/apps/{app_id}/widgets/{widget_id}/actions",
             method=hdrs.METH_PUT,
-            data=data
+            data=data,
         )
 
     async def send_notification(self, notification: Notification) -> str:
@@ -294,7 +276,8 @@ class LaMetricDevice:
         if current_notification.id is None:
             raise LaMetricApiError(
                 f"Current notification has no ID, "
-                f"cannot be dismissed: {current_notification}")
+                f"cannot be dismissed: {current_notification}"
+            )
 
         await self.dismiss_notification(current_notification.id)
 
@@ -311,7 +294,7 @@ class LaMetricDevice:
         response = await self._handle_api_request(
             uri="/api/v2/device/stream/start",
             method=hdrs.METH_PUT,
-            data=stream_config.to_dict()
+            data=stream_config.to_dict(),
         )
 
         if response["success"]["data"] is None:
@@ -322,8 +305,7 @@ class LaMetricDevice:
     async def stop_stream(self) -> None:
         """Stop the active LMSP stream and return the device to normal operation."""
         await self._handle_api_request(
-            uri="/api/v2/device/stream/stop",
-            method=hdrs.METH_PUT
+            uri="/api/v2/device/stream/stop", method=hdrs.METH_PUT
         )
 
     async def send_stream_data(self, session_id: str, rgb888_data: bytes) -> None:
@@ -347,21 +329,24 @@ class LaMetricDevice:
         version = int(str(stream_state.version.major))
         session_bytes = bytes.fromhex(session_id)
 
-        packet = struct.pack(
-            "<4sH16sBBBBHHHHH",
-            protocol_bytes,
-            version,
-            session_bytes,
-            0x00,       # content encoding: RAW
-            0x00,       # reserved
-            1,          # canvas area count
-            0x00,       # reserved
-            0,          # canvas area x
-            0,          # canvas area y
-            width,
-            height,
-            len(rgb888_data),
-        ) + rgb888_data
+        packet = (
+            struct.pack(
+                "<4sH16sBBBBHHHHH",
+                protocol_bytes,
+                version,
+                session_bytes,
+                0x00,  # content encoding: RAW
+                0x00,  # reserved
+                1,  # canvas area count
+                0x00,  # reserved
+                0,  # canvas area x
+                0,  # canvas area y
+                width,
+                height,
+                len(rgb888_data),
+            )
+            + rgb888_data
+        )
 
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:

@@ -61,10 +61,7 @@ class LaMetricCloud:
     _close_session: bool = False
 
     @backoff.on_exception(
-        backoff.expo,
-        LaMetricConnectionError,
-        max_tries=3,
-        logger=logger
+        backoff.expo, LaMetricConnectionError, max_tries=3, logger=logger
     )
     async def _handle_api_request(
         self,
@@ -72,11 +69,7 @@ class LaMetricCloud:
     ) -> Any:
         """Execute an authenticated cloud API request and return parsed JSON."""
 
-        url = URL.build(
-            scheme="https",
-            host="developer.lametric.com",
-            path=uri
-        )
+        url = URL.build(scheme="https", host="developer.lametric.com", path=uri)
 
         if self.session is None:
             self.session = aiohttp.ClientSession()
@@ -87,9 +80,11 @@ class LaMetricCloud:
                 response = await self.session.request(
                     hdrs.METH_GET,
                     url,
-                    headers={"Authorization": f"Bearer {self.token}",
-                             "Accept": "application/json", },
-                    raise_for_status=True
+                    headers={
+                        "Authorization": f"Bearer {self.token}",
+                        "Accept": "application/json",
+                    },
+                    raise_for_status=True,
                 )
 
             content_type = response.headers.get("Content-Type", "")
@@ -97,14 +92,13 @@ class LaMetricCloud:
             if "application/json" not in content_type:
                 raise LaMetricApiError(
                     response.status,
-                    {"content_type": content_type, "content": await response.text()}
+                    {"content_type": content_type, "content": await response.text()},
                 )
 
             return await response.json()
 
         except TimeoutError as error:
-            raise LaMetricConnectionError(
-                f"Request to {url} timed out") from error
+            raise LaMetricConnectionError(f"Request to {url} timed out") from error
 
         except aiohttp.ClientResponseError as error:
             if error.status in (401, 403):

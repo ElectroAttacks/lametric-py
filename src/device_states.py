@@ -1,4 +1,3 @@
-
 """Data models for LaMetric device state payloads."""
 
 from __future__ import annotations
@@ -34,10 +33,8 @@ class TimeBasedScreensaverMode(DataClassORJSONMixin):
     """Time-based screensaver settings in GMT and local time."""
 
     enabled: bool
-    start_time_gmt: datetime = field(
-        metadata=field_options(alias="start_time"))
-    end_time_gmt: datetime = field(
-        metadata=field_options(alias="end_time"))
+    start_time_gmt: datetime = field(metadata=field_options(alias="start_time"))
+    end_time_gmt: datetime = field(metadata=field_options(alias="end_time"))
     local_start_time: datetime
     local_end_time: datetime
 
@@ -58,8 +55,7 @@ class Screensaver(DataClassORJSONMixin):
     """Screensaver state embedded in display information."""
 
     enabled: bool
-    modes: dict[ScreensaverModes,
-                WhenDarkScreensaverMode | TimeBasedScreensaverMode]
+    modes: dict[ScreensaverModes, WhenDarkScreensaverMode | TimeBasedScreensaverMode]
     widget_id: str = field(metadata=field_options(alias="widget"))
 
     class Config(BaseConfig):
@@ -151,7 +147,8 @@ class DeviceState(DataClassORJSONMixin):
     wifi: DeviceWiFiState
     # Renamed field to be more descriptive
     update: DeviceSoftwareUpdate = field(
-        metadata=field_options(alias="update_available"))
+        metadata=field_options(alias="update_available")
+    )
 
     class Config(BaseConfig):
         serialize_by_alias = True

@@ -44,7 +44,6 @@ class GoalFrame(DataClassORJSONMixin):
     goal_data: GoalFrameData = field(metadata=field_options(alias="goalData"))
 
     class Config(BaseConfig):
-
         serialize_by_alias = True
         allow_deserialization_not_by_alias = True
 
@@ -57,7 +56,6 @@ class SpikeChartFrame(DataClassORJSONMixin):
     chart_data: list[int] = field(metadata=field_options(alias="chartData"))
 
     class Config(BaseConfig):
-
         serialize_by_alias = True
         allow_deserialization_not_by_alias = True
 
