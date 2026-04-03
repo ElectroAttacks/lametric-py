@@ -71,10 +71,6 @@ jobs:
         if: steps.release.outputs.released == 'true'
         run: uv python install 3.14
 
-      - name: Install dependencies
-        if: steps.release.outputs.released == 'true'
-        run: uv sync --locked --dev
-
       - name: Build distributions
         if: steps.release.outputs.released == 'true'
         run: uv build
