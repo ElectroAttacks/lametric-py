@@ -79,6 +79,9 @@ addopts = "--cov=src --cov-report=term-missing"
 version_toml = ["pyproject.toml:project.version"]
 major_on_zero = false
 
+[tool.semantic_release.commit_parser_options]
+patch_tags = ["fix", "perf", "refactor"]
+
 [tool.semantic_release.changelog]
 exclude_commit_patterns = ["chore", "ci"]
 
