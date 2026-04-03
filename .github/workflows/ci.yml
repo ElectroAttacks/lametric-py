@@ -37,19 +37,26 @@ jobs:
         with:
           file: ./coverage.xml
           fail_ci_if_error: false
-
   release:
     needs: quality
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     concurrency: release
     permissions:
-      contents: write # Wichtig, um Tags und Releases zu pushen
+      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Benötigt für die Historie (Semantic Release)
-
+          fetch-depth: 0
+  
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+  
+      - name: Set up Python 3.14
+        run: uv python install 3.14
+  
       - name: Python Semantic Release
         uses: python-semantic-release/python-semantic-release@master
         with:
