@@ -69,8 +69,8 @@ addopts = "--cov=src --cov-report=term-missing"
 # SEMANTIC RELEASE (Auto-Versioning)
 # ------------------------------------------------------------------------------
 [tool.semantic_release]
-version_toml = ["project.version"]
-version_variable = "src/__init__.py:__version__"
+version_toml = ["pyproject.toml:project.version"]
+version_variable = "src/lametric_py/__init__.py:__version__"
 major_on_zero = false
 build_command = "uv build"
 
