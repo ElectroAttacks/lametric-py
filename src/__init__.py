@@ -1,5 +1,7 @@
 """Public package exports for lametric-py."""
 
+from importlib.metadata import PackageNotFoundError, version
+
 from .cloud import CloudDevice, CloudUser, LaMetricCloud
 from .const import (
     AlarmSound,
@@ -61,7 +63,10 @@ from .exceptions import (
     LaMetricUnsupportedError,
 )
 
-__version__ = "0.1.0"
+try:
+    __version__ = version("lametric-py")
+except PackageNotFoundError:
+    __version__ = "0.0.0"
 
 __all__ = [
     "AlarmSound",

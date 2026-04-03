@@ -1,3 +1,5 @@
+from importlib.metadata import PackageNotFoundError, version
+
 from src import (
     LaMetricCloud,
     LaMetricDevice,
@@ -18,4 +20,9 @@ def test_public_api_exports_core_symbols() -> None:
 
 
 def test_public_api_exposes_version() -> None:
-    assert __version__ == "0.1.0"
+    try:
+        expected_version = version("lametric-py")
+    except PackageNotFoundError:
+        expected_version = "0.0.0"
+
+    assert __version__ == expected_version
