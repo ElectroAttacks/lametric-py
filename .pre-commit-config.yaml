@@ -23,3 +23,8 @@ repos:
         entry: uv run mypy .
         language: system
         pass_filenames: false
+    -   id: pytest
+        name: pytest
+        entry: uv run pytest
+        language: system
+        pass_filenames: false
