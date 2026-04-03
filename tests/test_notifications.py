@@ -1,4 +1,4 @@
-from src import (
+from lametric import (
     BuiltinSound,
     GoalFrame,
     GoalFrameData,

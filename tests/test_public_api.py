@@ -1,6 +1,6 @@
 from importlib.metadata import PackageNotFoundError, version
 
-from src import (
+from lametric import (
     LaMetricCloud,
     LaMetricDevice,
     Notification,

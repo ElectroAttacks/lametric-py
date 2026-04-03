@@ -7,7 +7,7 @@ from typing import Any
 from awesomeversion import AwesomeVersion
 from pytest import MonkeyPatch
 
-from src import (
+from lametric import (
     Canvas,
     CanvasArea,
     CanvasFillType,
@@ -89,14 +89,14 @@ def test_send_stream_data_builds_lmsp_packet_from_stream_state(
         return FakeSocket()
 
     monkeypatch.setattr(
-        "src.device.socket",
+        "lametric.device.socket",
         SimpleNamespace(
             AF_INET=object(),
             SOCK_DGRAM=object(),
             socket=fake_socket_factory,
         ),
     )
-    monkeypatch.setattr("src.device.asyncio.get_running_loop", lambda: FakeLoop())
+    monkeypatch.setattr("lametric.device.asyncio.get_running_loop", lambda: FakeLoop())
     monkeypatch.setattr(
         LaMetricDevice, "stream_state", property(lambda _self: fake_stream_state())
     )
