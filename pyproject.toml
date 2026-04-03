@@ -2,7 +2,9 @@
 name = "lametric-py"
 version = "0.1.0"
 description = ""
-authors = [ "Caspar Weber" ]
+authors = [ 
+    { name = "Caspar Weber" } 
+]
 dependencies = [
     "yarl>=1.0.0",
     "aiohttp>=3.0.0",
