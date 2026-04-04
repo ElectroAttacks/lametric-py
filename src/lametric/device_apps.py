@@ -17,7 +17,7 @@ class Widget(DataClassORJSONMixin):
     index: int
     app_id: str = field(metadata=field_options(alias="package"))
     visible: bool = False
-    settings: dict[str, str]
+    settings: dict[str, str] = field(default_factory=dict[str, str])
 
     class Config(BaseConfig):
         serialize_by_alias = True

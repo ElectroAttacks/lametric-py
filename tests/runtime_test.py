@@ -27,11 +27,13 @@ from lametric import (
     SimpleFrame,
 )
 from lametric.device_states import DeviceState
+from lametric.exceptions import LaMetricApiError
 
 # Allow running from the repo root without installing the package.
 sys.path.insert(0, "src")
 
 
+SKIP = "\033[33mSKIP\033[0m"
 PASS = "\033[32mPASS\033[0m"
 FAIL = "\033[31mFAIL\033[0m"
 
@@ -193,7 +195,23 @@ async def test_app_navigation(device: LaMetricDevice) -> None:
 
 
 async def test_stream_state(device: LaMetricDevice) -> None:
-    await check("GET /api/v2/device/stream  →  stream_state", device.stream_state)
+    name = "GET /api/v2/device/stream  →  stream_state"
+    try:
+        await device.stream_state
+        results.append((name, True, ""))
+        print(f"  {PASS}  {name}")
+    except LaMetricApiError as exc:
+        if "not found" in str(exc).lower():
+            print(f"  {SKIP}  {name}  (endpoint not supported on this firmware)")
+        else:
+            results.append((name, False, str(exc)))
+            print(f"  {FAIL}  {name}")
+            print(f"         {exc}")
+    except Exception:
+        msg = traceback.format_exc().strip().splitlines()[-1]
+        results.append((name, False, msg))
+        print(f"  {FAIL}  {name}")
+        print(f"         {msg}")
 
 
 # ---------------------------------------------------------------------------
