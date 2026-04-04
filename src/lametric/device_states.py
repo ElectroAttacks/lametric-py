@@ -91,7 +91,8 @@ class DeviceBluetoothState(DataClassORJSONMixin):
 class DeviceDisplayState(DataClassORJSONMixin):
     """Display state including brightness and screensaver details."""
 
-    on: bool
+    # LaMetric Time does not include on field
+    on: bool = True
     width: int
     height: int
     type: DisplayType
