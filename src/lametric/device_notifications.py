@@ -24,6 +24,9 @@ class SimpleFrame(DataClassORJSONMixin):
     icon: int | str | None = None
     text: str | None = None
 
+    class Config(BaseConfig):
+        omit_none = True
+
 
 @dataclass(kw_only=True)
 class GoalFrameData(DataClassORJSONMixin):
@@ -46,6 +49,7 @@ class GoalFrame(DataClassORJSONMixin):
     class Config(BaseConfig):
         serialize_by_alias = True
         allow_deserialization_not_by_alias = True
+        omit_none = True
 
 
 @dataclass(kw_only=True)
@@ -70,6 +74,9 @@ class BuiltinSound(DataClassORJSONMixin):
     category: SoundCategory | None = None
     id: AlarmSound | NotificationSound | None = None
 
+    class Config(BaseConfig):
+        omit_none = True
+
     def __post_init__(self) -> None:
         """Infer sound category from sound identifier when omitted."""
 
@@ -90,6 +97,9 @@ class WebSound(DataClassORJSONMixin):
     type: str | None = None
     fallback: BuiltinSound | None = None
 
+    class Config(BaseConfig):
+        omit_none = True
+
 
 @dataclass(kw_only=True)
 class NotificationData(DataClassORJSONMixin):
@@ -103,6 +113,9 @@ class NotificationData(DataClassORJSONMixin):
     repeat: int = 1
     cycles: int = 1
 
+    class Config(BaseConfig):
+        omit_none = True
+
 
 @dataclass(kw_only=True)
 class Notification(DataClassORJSONMixin):
@@ -113,6 +126,9 @@ class Notification(DataClassORJSONMixin):
     priority: NotificationPriority | None = None
     created: datetime | None = None
     expiration_date: datetime | None = None
-    model: NotificationData
+    model: NotificationData | None = None
     icon_type: IconType | None = None
     lifetime: int | None = None
+
+    class Config(BaseConfig):
+        omit_none = True

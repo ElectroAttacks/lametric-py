@@ -120,7 +120,10 @@ class LaMetricDevice:
         """Return all installed apps keyed by their app ID."""
         response = await self._handle_api_request(uri="/api/v2/device/apps")
 
-        return {app_data["id"]: App.from_dict(app_data) for app_data in response}
+        return {
+            package_id: App.from_dict(app_data)
+            for package_id, app_data in response.items()
+        }
 
     @property
     async def notifications(self) -> list[Notification]:
