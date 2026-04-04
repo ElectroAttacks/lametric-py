@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 
 from awesomeversion import AwesomeVersion
 from mashumaro import field_options
+from mashumaro.config import BaseConfig
 from mashumaro.mixins.orjson import DataClassORJSONMixin
 
 
@@ -14,9 +15,13 @@ class Widget(DataClassORJSONMixin):
     """Represents a widget entry belonging to an installed LaMetric app."""
 
     index: int
-    app_id: str
-    visible: bool
+    app_id: str = field(metadata=field_options(alias="package"))
+    visible: bool = False
     settings: dict[str, str]
+
+    class Config(BaseConfig):
+        serialize_by_alias = True
+        allow_deserialization_not_by_alias = True
 
 
 @dataclass(kw_only=True)
@@ -25,7 +30,7 @@ class Parameter(DataClassORJSONMixin):
 
     data_type: str
     name: str
-    format: str | None
+    format: str | None = None
     required: bool = False
 
 
