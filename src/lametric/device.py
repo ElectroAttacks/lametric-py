@@ -12,6 +12,7 @@ from typing import Any, Self, cast
 import aiohttp
 import backoff
 from aiohttp import hdrs
+from aiohttp.helpers import BasicAuth
 from yarl import URL
 
 from .const import BrightnessMode
@@ -61,19 +62,19 @@ class LaMetricDevice:
                 response = await self.session.request(
                     method,
                     url,
-                    auth=aiohttp.BasicAuth(login="dev", password=self.api_key),
+                    auth=BasicAuth("dev", self.api_key),
                     headers={"Accept": "application/json"},
                     json=data,
                     raise_for_status=True,
                     ssl=False,
                 )
 
-            content_type = response.headers.get(hdrs.CONTENT_TYPE, "")
+            content_type = response.headers.get("Content-Type", "")
 
             if "application/json" not in content_type:
                 raise LaMetricApiError(
                     response.status,
-                    {"content_type": content_type, "content": await response.text()},
+                    {"message": await response.text()},
                 )
 
             return await response.json()
@@ -98,7 +99,8 @@ class LaMetricDevice:
                 ) from error
 
             raise LaMetricApiError(
-                f"API request to {url} failed with status: {error.message}"
+                f"API request to {url} failed with status: "
+                f"{error.status} {error.message}"
             ) from error
 
         except (aiohttp.ClientError, socket.gaierror) as error:
@@ -179,7 +181,7 @@ class LaMetricDevice:
         )
 
     async def set_audio(self, volume: int) -> None:
-        """Set the device speaker volume (0–100)."""
+        """Set the device speaker volume (0-100)."""
 
         await self._handle_api_request(
             uri="/api/v2/device/audio", method=hdrs.METH_PUT, data={"volume": volume}
