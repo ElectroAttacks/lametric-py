@@ -42,7 +42,7 @@ pip install -e .
 ```python
 import asyncio
 
-from src import LaMetricDevice
+from lametric import LaMetricDevice
 
 
 async def main() -> None:
@@ -59,7 +59,7 @@ asyncio.run(main())
 ```python
 import asyncio
 
-from src import (
+from lametric import (
 	BuiltinSound,
 	LaMetricDevice,
 	Notification,
@@ -92,7 +92,7 @@ asyncio.run(main())
 ```python
 import asyncio
 
-from src import LaMetricCloud
+from lametric import LaMetricCloud
 
 
 async def main() -> None:
@@ -110,7 +110,7 @@ asyncio.run(main())
 ```python
 import asyncio
 
-from src import (
+from lametric import (
 	CanvasFillType,
 	CanvasPostProcess,
 	CanvasPostProcessType,
@@ -146,7 +146,7 @@ asyncio.run(main())
 
 ## Public API
 
-The package currently re-exports its public surface from `src`.
+The package re-exports its public surface from `lametric`.
 
 - Clients: `LaMetricDevice`, `LaMetricCloud`
 - Exceptions: `LaMetricApiError`, `LaMetricConnectionError`, `LaMetricAuthenticationError`, `LaMetricUnsupportedError`

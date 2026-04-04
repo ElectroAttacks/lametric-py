@@ -13,7 +13,7 @@ package, the flow is:
 ## Start a Stream
 
 ```python
-from src import (
+from lametric import (
     CanvasFillType,
     CanvasPostProcess,
     CanvasPostProcessType,
@@ -61,7 +61,7 @@ The payload for `send_stream_data` must be full-frame RGB888 data:
 stream_state = await device.stream_state
 width = stream_state.canvas.pixel.size.width
 height = stream_state.canvas.pixel.size.height
-frame = bytes([255, 0, 0] * (width * height))
+frame = bytes([255, 0, 0] * (width * height))  # full red frame
 await device.send_stream_data(session_id, frame)
 ```
 

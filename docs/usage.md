@@ -7,7 +7,7 @@
 ```python
 import asyncio
 
-from src import LaMetricDevice
+from lametric import LaMetricDevice
 
 
 async def main() -> None:
@@ -39,7 +39,7 @@ await device.activate_widget(app_id="com.example.app", widget_id="main")
 ### Notifications
 
 ```python
-from src import (
+from lametric import (
     BuiltinSound,
     Notification,
     NotificationData,
@@ -67,7 +67,7 @@ await device.dismiss_notification(notification_id)
 ```python
 import asyncio
 
-from src import LaMetricCloud
+from lametric import LaMetricCloud
 
 
 async def main() -> None:

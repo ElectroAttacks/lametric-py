@@ -22,12 +22,13 @@ uv run pytest --cov=src --cov-report=term-missing
 
 ## Project Layout
 
-- `src/device.py`: local device client
-- `src/cloud.py`: cloud API client
-- `src/device_notifications.py`: notification payload models
-- `src/device_states.py`: device and stream response models
-- `src/device_configs.py`: request payload models
-- `src/const.py`: enums and protocol constants
+- `src/lametric/device.py`: local device client
+- `src/lametric/cloud.py`: cloud API client
+- `src/lametric/device_notifications.py`: notification payload models
+- `src/lametric/device_states.py`: device and stream response models
+- `src/lametric/device_apps.py`: installed app models
+- `src/lametric/device_configs.py`: request payload models
+- `src/lametric/const.py`: enums and protocol constants
 - `tests/`: unit tests
 - `tests/runtime_test.py`: live integration test (requires a real device)
 
@@ -51,16 +52,18 @@ Example:
 Connecting to 192.168.1.42 …
 
   PASS  GET /api/v2/device  →  DeviceState
-         model=sa5  os=3.2.3  brightness=35  on=True
+         model=LM 37X8  os=2.3.9  brightness=75  on=True
   PASS  GET /api/v2/device/apps  →  installed_apps
+  ...
+  SKIP  GET /api/v2/device/stream  →  stream_state  (endpoint not supported on this firmware)
   ...
 
 ──────────────────────────────────────────────────
-Results: 14/14 passed – all good
+Results: 16/16 passed – all good
 ```
 
 ## Packaging Notes
 
-- The public package surface is re-exported from `src/__init__.py`
-- `src/py.typed` marks the package as typed for PEP 561 consumers
-- Version metadata is kept in both `pyproject.toml` and `src/__init__.py`
+- The public package surface is re-exported from `src/lametric/__init__.py`
+- `src/lametric/py.typed` marks the package as typed for PEP 561 consumers
+- Version metadata is kept in both `pyproject.toml` and `src/lametric/__init__.py`
