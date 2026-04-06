@@ -464,7 +464,7 @@ requires-dist = [
     { name = "awesomeversion", specifier = ">=25.8.0" },
     { name = "backoff", specifier = ">=2.2.1" },
     { name = "mashumaro", specifier = ">=3.20" },
-    { name = "orjson", specifier = ">=3.11.8" },
+    { name = "orjson", specifier = ">=3.11.3" },
     { name = "yarl", specifier = ">=1.23.0" },
 ]
 
