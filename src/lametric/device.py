@@ -24,6 +24,7 @@ from .exceptions import (
     LaMetricApiError,
     LaMetricAuthenticationError,
     LaMetricConnectionError,
+    LaMetricUnsupportedError,
 )
 
 
@@ -89,12 +90,12 @@ class LaMetricDevice:
                 ) from error
 
             if error.status == 404:
-                raise LaMetricApiError(
+                raise LaMetricUnsupportedError(
                     f"API endpoint not found at {url}: {error.message}"
                 ) from error
 
             if error.status == 405:
-                raise LaMetricApiError(
+                raise LaMetricUnsupportedError(
                     f"Method {method} not allowed at {url}: {error.message}"
                 ) from error
 
