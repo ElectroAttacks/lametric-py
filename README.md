@@ -5,6 +5,7 @@
 [![Python](https://img.shields.io/badge/python-3.14%2B-blue)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/github/license/ElectroAttacks/lametric-py)](LICENSE)
 [![Docs](https://img.shields.io/badge/docs-electroattacks.github.io-blue)](https://electroattacks.github.io/lametric-py/)
+[![Contributing](https://img.shields.io/badge/contributing-guide-brightgreen)](CONTRIBUTING.md)
 
 Async Python client for LaMetric devices and the LaMetric cloud API.
 
