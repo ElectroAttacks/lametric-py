@@ -92,7 +92,7 @@ class DeviceDisplayState(DataClassORJSONMixin):
     """Display state including brightness and screensaver details."""
 
     # LaMetric Time does not include on field
-    on: bool = True
+    on: bool | None = None
     width: int
     height: int
     type: DisplayType
