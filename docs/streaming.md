@@ -30,6 +30,34 @@ config = StreamConfig(
 session_id = await device.start_stream(config)
 ```
 
+To apply a post-processing effect, set `type=CanvasPostProcessType.EFFECT` and
+supply `params`:
+
+```python
+from lametric import (
+    CanvasFadingPixelsEffectParameters,
+    CanvasPostProcessEffectType,
+    CanvasPostProcessParameters,
+)
+
+config = StreamConfig(
+    fill_type=CanvasFillType.SCALE,
+    render_mode=CanvasRenderMode.PIXEL,
+    post_process=CanvasPostProcess(
+        type=CanvasPostProcessType.EFFECT,
+        params=CanvasPostProcessParameters(
+            effect_type=CanvasPostProcessEffectType.FADING_PIXELS,
+            effect_params=CanvasFadingPixelsEffectParameters(
+                smooth=True,
+                pixel_fill=0.8,
+                fade_speed=0.5,
+                pixel_base=0.2,
+            ),
+        ),
+    ),
+)
+```
+
 ## Packet Format
 
 `send_stream_data` builds one LMSP packet with this structure using little-endian

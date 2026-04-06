@@ -27,8 +27,9 @@ uv run pytest --cov=src --cov-report=term-missing
 - `src/lametric/device_notifications.py`: notification payload models
 - `src/lametric/device_states.py`: device and stream response models
 - `src/lametric/device_apps.py`: installed app models
-- `src/lametric/device_configs.py`: request payload models
+- `src/lametric/device_configs.py`: request payload models (display, screensaver, stream)
 - `src/lametric/const.py`: enums and protocol constants
+- `src/lametric/exceptions.py`: custom exception hierarchy
 - `tests/`: unit tests
 - `tests/runtime_test.py`: live integration test (requires a real device)
 
