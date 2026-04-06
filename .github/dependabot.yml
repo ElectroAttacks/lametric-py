@@ -6,8 +6,7 @@ updates:
   - package-ecosystem: pip
     directory: "/"
     schedule:
-      interval: weekly
-      day: monday
+      interval: daily
     labels:
       - "dependencies"
     commit-message:
@@ -27,8 +26,7 @@ updates:
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: weekly
-      day: monday
+      interval: daily
     labels:
       - "dependencies"
       - "ci"
