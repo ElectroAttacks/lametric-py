@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/ElectroAttacks/lametric-py/actions/workflows/ci.yml/badge.svg)](https://github.com/ElectroAttacks/lametric-py/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/lametric-py)](https://pypi.org/project/lametric-py/)
-[![Python](https://img.shields.io/pypi/pyversions/lametric-py)](https://pypi.org/project/lametric-py/)
+[![Python](https://img.shields.io/badge/python-3.14%2B-blue)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/github/license/ElectroAttacks/lametric-py)](LICENSE)
 [![Docs](https://img.shields.io/badge/docs-electroattacks.github.io-blue)](https://electroattacks.github.io/lametric-py/)
 
