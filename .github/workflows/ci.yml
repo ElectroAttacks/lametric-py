@@ -20,6 +20,8 @@ jobs:
   pre-commit:
     name: "Stage 1 · JSON+YAML / Ruff / Mypy / Pytest"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v6
 
