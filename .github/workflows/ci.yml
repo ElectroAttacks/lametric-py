@@ -109,7 +109,7 @@ jobs:
 
       - name: Upload Distribution Artifacts
         if: steps.release.outputs.released == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dist
           path: dist
@@ -124,7 +124,7 @@ jobs:
       id-token: write
     steps:
       - name: Download Distribution Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: dist
           path: dist
