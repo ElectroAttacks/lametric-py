@@ -63,6 +63,7 @@ jobs:
 
   # ── Stage 2 ─────────────────────────────────────────────────────────────────
   release:
+    name: "Stage 2 · Semantic Release / Build / Publish GitHub"
     needs: pre-commit
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -116,6 +117,7 @@ jobs:
           if-no-files-found: error
 
   publish-pypi:
+    name: "Stage 3 · Publish PyPI"
     needs: release
     if: needs.release.outputs.released == 'true'
     runs-on: ubuntu-latest
