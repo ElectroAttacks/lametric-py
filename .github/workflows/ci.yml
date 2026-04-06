@@ -1,3 +1,5 @@
+---
+
 name: CI & Release
 
 on:
@@ -5,23 +7,47 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main]
+  schedule:
+    - cron: "0 0 * * *"
+
+# ─── Stage 1: pre-commit ─────────────────────────────────────────────────────
+# JSON/YAML parsing+linting, Ruff, Mypy, Pytest.
+# ─── Stage 2: release ────────────────────────────────────────────────────────
+# Semantic release. Only runs on push to main after all validators pass.
 
 jobs:
-  quality:
+  # ── Stage 1 ─────────────────────────────────────────────────────────────────
+  pre-commit:
+    name: "Stage 1 · JSON+YAML / Ruff / Mypy / Pytest"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@v7
         with:
-          enable-cache: true # Nutzt GitHub Cache für blitzschnelle Re-Runs
+          enable-cache: true
 
       - name: Set up Python 3.14
         run: uv python install 3.14
 
       - name: Install dependencies
         run: uv sync --locked --dev
+
+      - name: Validate JSON files
+        run: |
+          find . -name "*.json" \
+            -not -path "./.venv/*" \
+            -not -path "./node_modules/*" \
+            | sort | while read -r f; do
+              python -m json.tool "$f" > /dev/null && echo "✓ $f" || exit 1
+            done
+
+      - name: Lint YAML files
+        run: |
+          uvx yamllint --config-file .yamllint.yml \
+            custom_components/lametric_hass_local/services.yaml \
+            .github/
 
       - name: Lint & Format Check (Ruff)
         run: uv run ruff check . && uv run ruff format --check .
@@ -30,15 +56,17 @@ jobs:
         run: uv run mypy .
 
       - name: Run Tests (Pytest)
-        run: uv run pytest --cov=src --cov-report=xml
+        run: uv run pytest --cov=custom_components/lametric_hass_local --cov-report=xml
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v6
         with:
           file: ./coverage.xml
           fail_ci_if_error: false
+
+  # ── Stage 2 ─────────────────────────────────────────────────────────────────
   release:
-    needs: quality
+    needs: pre-commit
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     concurrency: release
