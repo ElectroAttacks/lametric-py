@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>lametric-py</title>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --border: #2a2d3a;
+            --accent: #4f8ef7;
+            --accent-dim: #2a4a8a;
+            --text: #e2e4ed;
+            --muted: #7a7f99;
+            --code-bg: #13151f;
+            --radius: 8px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            font-size: 15px;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* ── Layout ── */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        nav {
+            width: 240px;
+            flex-shrink: 0;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1.25rem;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        nav .logo {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-bottom: 2rem;
+        }
+
+        nav .logo span {
+            color: var(--accent);
+        }
+
+        nav ul {
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-bottom: 0.1rem;
+        }
+
+        nav ul li a {
+            display: block;
+            padding: 0.35rem 0.6rem;
+            border-radius: 5px;
+            color: var(--muted);
+            font-size: 0.875rem;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        nav ul li a:hover,
+        nav ul li a.active {
+            background: var(--accent-dim);
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        nav .section-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            padding: 1rem 0.6rem 0.3rem;
+        }
+
+        main {
+            flex: 1;
+            padding: 3rem 4rem;
+            max-width: 860px;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            margin-bottom: 3.5rem;
+        }
+
+        .hero h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero h1 span {
+            color: var(--accent);
+        }
+
+        .hero p {
+            color: var(--muted);
+            max-width: 560px;
+        }
+
+        .badges {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: var(--accent-dim);
+            color: var(--accent);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+        }
+
+        /* ── Sections ── */
+        section {
+            margin-bottom: 3.5rem;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 1.75rem 0 0.75rem;
+            color: var(--text);
+        }
+
+        p {
+            margin-bottom: 0.75rem;
+            color: var(--text);
+        }
+
+        code {
+            font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+            font-size: 0.85em;
+            background: var(--code-bg);
+            padding: 0.1em 0.35em;
+            border-radius: 4px;
+            color: #c9d1d9;
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.1rem 1.25rem;
+            overflow-x: auto;
+            margin: 0.75rem 0 1.25rem;
+            font-size: 0.83rem;
+            line-height: 1.6;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            font-size: inherit;
+            color: #c9d1d9;
+        }
+
+        ul,
+        ol {
+            margin: 0.5rem 0 1rem 1.25rem;
+        }
+
+        li {
+            margin-bottom: 0.25rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem 1.1rem;
+        }
+
+        .card h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+        }
+
+        .card p {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin: 0;
+        }
+
+        .note {
+            background: var(--surface);
+            border-left: 3px solid var(--accent);
+            padding: 0.75rem 1rem;
+            border-radius: 0 var(--radius) var(--radius) 0;
+            font-size: 0.875rem;
+            color: var(--muted);
+            margin: 1rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                display: none;
+            }
+
+            main {
+                padding: 2rem 1.25rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+
+        <!-- ── Sidebar ── -->
+        <nav>
+            <div class="logo"><span>lametric</span>-py</div>
+            <ul>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#installation">Installation</a></li>
+            </ul>
+
+            <div class="section-label">Device API</div>
+            <ul>
+                <li><a href="#device-client">Client Setup</a></li>
+                <li><a href="#display-audio">Display &amp; Audio</a></li>
+                <li><a href="#apps">App Management</a></li>
+                <li><a href="#notifications">Notifications</a></li>
+            </ul>
+
+            <div class="section-label">Streaming</div>
+            <ul>
+                <li><a href="#streaming">LMSP Overview</a></li>
+                <li><a href="#stream-start">Start a Stream</a></li>
+                <li><a href="#stream-frames">Send Frames</a></li>
+            </ul>
+
+            <div class="section-label">Cloud API</div>
+            <ul>
+                <li><a href="#cloud">Cloud Client</a></li>
+            </ul>
+
+            <div class="section-label">Reference</div>
+            <ul>
+                <li><a href="#errors">Errors</a></li>
+                <li><a href="#development">Development</a></li>
+            </ul>
+        </nav>
+
+        <!-- ── Content ── -->
+        <main>
+
+            <!-- Hero -->
+            <div class="hero" id="overview">
+                <h1><span>lametric</span>-py</h1>
+                <p>Async Python client for LaMetric devices and the LaMetric cloud API. Wraps the local device API,
+                    notification models, and the LaMetric Streaming Protocol (LMSP).</p>
+                <div class="badges">
+                    <span class="badge">Python 3.14+</span>
+                    <span class="badge">asyncio</span>
+                    <span class="badge">aiohttp</span>
+                    <span class="badge">typed</span>
+                    <span class="badge">MIT</span>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <section>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>Local Device API</h4>
+                        <p>Control display, audio, Bluetooth, apps, and notifications over HTTPS.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Notifications</h4>
+                        <p>Text, goal, and chart frames with built-in or custom sounds.</p>
+                    </div>
+                    <div class="card">
+                        <h4>LMSP Streaming</h4>
+                        <p>Push RGB888 frames to LaMetric SKY over UDP via the streaming protocol.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Cloud API</h4>
+                        <p>Fetch your user profile and registered devices from developer.lametric.com.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Installation -->
+            <section id="installation">
+                <h2>Installation</h2>
+                <p>The package is installed from source using <a href="https://docs.astral.sh/uv/">uv</a>:</p>
+                <pre><code>git clone &lt;repository-url&gt;
+cd lametric-py
+uv sync</code></pre>
+                <p>Or with pip:</p>
+                <pre><code>pip install -e .</code></pre>
+            </section>
+
+            <!-- Device Client -->
+            <section id="device-client">
+                <h2>Local Device Client</h2>
+                <p><code>LaMetricDevice</code> connects to the local HTTPS API on port <code>4343</code>. Use it as an
+                    async context manager — it manages the underlying <code>aiohttp</code> session for you.</p>
+                <pre><code>import asyncio
+from lametric import LaMetricDevice
+
+async def main() -> None:
+    async with LaMetricDevice(host="192.168.1.42", api_key="device-api-key") as device:
+        state = await device.state
+        print(state.display.brightness)
+
+asyncio.run(main())</code></pre>
+                <p>The device IP and API key are visible in the LaMetric app under <em>Settings → Wi-Fi</em> and
+                    <em>Settings → Developer → API Key</em>.</p>
+            </section>
+
+            <!-- Display & Audio -->
+            <section id="display-audio">
+                <h2>Display &amp; Audio</h2>
+
+                <h3>Basic settings</h3>
+                <pre><code>await device.set_audio(25)
+await device.set_display(on=True, brightness=75)
+await device.set_bluetooth(active=True, name="Office SKY")</code></pre>
+
+                <h3>Brightness mode</h3>
+                <pre><code>from lametric import BrightnessMode
+
+await device.set_display(brightness_mode=BrightnessMode.AUTO)</code></pre>
+
+                <h3>Screensaver</h3>
+                <pre><code>from datetime import datetime
+from lametric import ScreensaverConfig, ScreensaverConfigParams, ScreensaverModes
+
+await device.set_display(
+    screensaver_config=ScreensaverConfig(
+        enabled=True,
+        mode=ScreensaverModes.TIME_BASED,
+        mode_params=ScreensaverConfigParams(
+            enabled=True,
+            start_time_gmt=datetime(2000, 1, 1, 22, 0),
+            end_time_gmt=datetime(2000, 1, 1, 7, 0),
+        ),
+    )
+)</code></pre>
+            </section>
+
+            <!-- App Management -->
+            <section id="apps">
+                <h2>App Management</h2>
+                <pre><code>apps = await device.installed_apps                    # dict[str, App]
+weather = await device.get_installed_app("com.lametric.weather")
+
+await device.activate_next_app()
+await device.activate_previous_app()
+await device.activate_widget(app_id="com.example.app", widget_id="main")</code></pre>
+
+                <h3>Widget actions</h3>
+                <pre><code>await device.activate_action(
+    app_id="com.example.app",
+    widget_id="main",
+    action_id="my_action",
+    action_parameters={"key": "value"},
+    visible=True,
+)</code></pre>
+            </section>
+
+            <!-- Notifications -->
+            <section id="notifications">
+                <h2>Notifications</h2>
+
+                <h3>Send and dismiss</h3>
+                <pre><code>from lametric import (
+    BuiltinSound, Notification, NotificationData,
+    NotificationPriority, NotificationSound, SimpleFrame,
+)
+
+notification = Notification(
+    priority=NotificationPriority.INFO,
+    model=NotificationData(
+        frames=[SimpleFrame(text="Build successful")],
+        sound=BuiltinSound(id=NotificationSound.POSITIVE1),
+    ),
+)
+
+notification_id = await device.send_notification(notification)
+await device.dismiss_notification(notification_id)
+
+# Dismiss helpers
+await device.dismiss_current_notification()
+await device.dismiss_all_notifications()</code></pre>
+
+                <h3>Read the queue</h3>
+                <pre><code>queued  = await device.notifications          # list[Notification]
+current = await device.current_notification  # Notification | None</code></pre>
+
+                <h3>Frame types</h3>
+                <pre><code>from lametric import GoalFrame, GoalFrameData, SpikeChartFrame
+
+goal_frame = GoalFrame(
+    icon="i1234",
+    goal_data=GoalFrameData(start=0, current=42, end=100, unit="%"),
+)
+
+chart_frame = SpikeChartFrame(chart_data=[1, 3, 5, 3, 1, 0, 2])</code></pre>
+
+                <h3>Sound types</h3>
+                <p><code>BuiltinSound</code> infers its category automatically from the sound identifier:</p>
+                <pre><code>from lametric import AlarmSound, BuiltinSound, NotificationSound
+
+alarm   = BuiltinSound(id=AlarmSound.ALARM1)             # category → ALARMS
+notify  = BuiltinSound(id=NotificationSound.CASH)        # category → NOTIFICATIONS</code></pre>
+                <p><code>WebSound</code> streams audio from a URL with an optional built-in fallback:</p>
+                <pre><code>from lametric import WebSound
+
+sound = WebSound(
+    url="https://example.com/alert.mp3",
+    fallback=BuiltinSound(id=NotificationSound.NOTIFICATION),
+)</code></pre>
+            </section>
+
+            <!-- Streaming Overview -->
+            <section id="streaming">
+                <h2>LMSP Streaming</h2>
+                <p>LaMetric SKY supports the LaMetric Streaming Protocol (LMSP) over UDP. The flow is:</p>
+                <ol>
+                    <li>Read stream metadata — <code>await device.stream_state</code></li>
+                    <li>Start a stream — <code>await device.start_stream(config)</code></li>
+                    <li>Send RGB888 frames — <code>await device.send_stream_data(session_id, frame)</code></li>
+                    <li>Stop the stream — <code>await device.stop_stream()</code></li>
+                </ol>
+            </section>
+
+            <!-- Start a Stream -->
+            <section id="stream-start">
+                <h2>Start a Stream</h2>
+                <pre><code>from lametric import (
+    CanvasFillType, CanvasPostProcess,
+    CanvasPostProcessType, CanvasRenderMode, StreamConfig,
+)
+
+config = StreamConfig(
+    fill_type=CanvasFillType.SCALE,
+    render_mode=CanvasRenderMode.PIXEL,
+    post_process=CanvasPostProcess(type=CanvasPostProcessType.NONE),
+)
+
+session_id = await device.start_stream(config)</code></pre>
+
+                <h3>Post-processing effects</h3>
+                <pre><code>from lametric import (
+    CanvasFadingPixelsEffectParameters, CanvasPostProcessEffectType,
+    CanvasPostProcessParameters,
+)
+
+config = StreamConfig(
+    fill_type=CanvasFillType.SCALE,
+    render_mode=CanvasRenderMode.PIXEL,
+    post_process=CanvasPostProcess(
+        type=CanvasPostProcessType.EFFECT,
+        params=CanvasPostProcessParameters(
+            effect_type=CanvasPostProcessEffectType.FADING_PIXELS,
+            effect_params=CanvasFadingPixelsEffectParameters(
+                smooth=True, pixel_fill=0.8, fade_speed=0.5, pixel_base=0.2,
+            ),
+        ),
+    ),
+)</code></pre>
+            </section>
+
+            <!-- Send Frames -->
+            <section id="stream-frames">
+                <h2>Send Frames</h2>
+                <p><code>send_stream_data</code> builds a complete LMSP UDP packet and delivers it to the device. The
+                    packet layout (little-endian) is:</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Size</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Protocol name</td>
+                            <td>4 bytes</td>
+                            <td>From stream state</td>
+                        </tr>
+                        <tr>
+                            <td>Version</td>
+                            <td>2 bytes</td>
+                            <td>From stream state</td>
+                        </tr>
+                        <tr>
+                            <td>Session ID</td>
+                            <td>16 bytes</td>
+                            <td>Returned by <code>start_stream</code></td>
+                        </tr>
+                        <tr>
+                            <td>Content encoding</td>
+                            <td>1 byte</td>
+                            <td><code>0x00</code> = raw RGB888</td>
+                        </tr>
+                        <tr>
+                            <td>Reserved</td>
+                            <td>1 byte</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Canvas area count</td>
+                            <td>1 byte</td>
+                            <td>Always 1 (full canvas)</td>
+                        </tr>
+                        <tr>
+                            <td>Reserved</td>
+                            <td>1 byte</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>X / Y / Width / Height</td>
+                            <td>2 bytes each</td>
+                            <td>Canvas dimensions</td>
+                        </tr>
+                        <tr>
+                            <td>Data length</td>
+                            <td>2 bytes</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Pixel data</td>
+                            <td>variable</td>
+                            <td>RGB888 bytes</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <pre><code>stream_state = await device.stream_state
+width  = stream_state.canvas.pixel.size.width
+height = stream_state.canvas.pixel.size.height
+
+frame = bytes([255, 0, 0] * (width * height))  # solid red
+await device.send_stream_data(session_id, frame)</code></pre>
+                <div class="note">
+                    UDP delivery is best-effort. Send frames in a loop at the desired frame rate for smooth animation.
+                    Stop the stream with <code>await device.stop_stream()</code> when done.
+                </div>
+            </section>
+
+            <!-- Cloud -->
+            <section id="cloud">
+                <h2>Cloud Client</h2>
+                <p><code>LaMetricCloud</code> authenticates with <code>developer.lametric.com</code> using a bearer
+                    token.</p>
+                <pre><code>import asyncio
+from lametric import LaMetricCloud
+
+async def main() -> None:
+    async with LaMetricCloud(token="developer-token") as cloud:
+        user    = await cloud.current_user  # CloudUser
+        devices = await cloud.devices       # list[CloudDevice]
+        print(user.name)
+        print([d.name for d in devices])
+
+asyncio.run(main())</code></pre>
+                <p>Obtain a developer token at <a href="https://developer.lametric.com">developer.lametric.com</a>.</p>
+            </section>
+
+            <!-- Errors -->
+            <section id="errors">
+                <h2>Errors</h2>
+                <p>Both clients raise the same exception hierarchy:</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Exception</th>
+                            <th>When raised</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>LaMetricApiError</code></td>
+                            <td>Generic HTTP error from the API</td>
+                        </tr>
+                        <tr>
+                            <td><code>LaMetricAuthenticationError</code></td>
+                            <td>401 / 403 — invalid credentials or token</td>
+                        </tr>
+                        <tr>
+                            <td><code>LaMetricConnectionError</code></td>
+                            <td>Timeout, DNS failure, or transport error</td>
+                        </tr>
+                        <tr>
+                            <td><code>LaMetricUnsupportedError</code></td>
+                            <td>404 / 405 — endpoint not supported on this firmware</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Development -->
+            <section id="development">
+                <h2>Development</h2>
+
+                <h3>Setup</h3>
+                <pre><code>git clone &lt;repository-url&gt;
+cd lametric-py
+uv sync --dev
+pre-commit install</code></pre>
+
+                <h3>Quality gates</h3>
+                <pre><code>uv run ruff check .
+uv run ruff format --check .
+uv run mypy .
+uv run pytest --cov=src --cov-report=term-missing</code></pre>
+
+                <h3>Project layout</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Path</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>src/lametric/device.py</code></td>
+                            <td>Local device client</td>
+                        </tr>
+                        <tr>
+                            <td><code>src/lametric/cloud.py</code></td>
+                            <td>Cloud API client</td>
+                        </tr>
+                        <tr>
+                            <td><code>src/lametric/device_notifications.py</code></td>
+                            <td>Notification payload models</td>
+                        </tr>
+                        <tr>
+                            <td><code>src/lametric/device_states.py</code></td>
+                            <td>Device &amp; stream response models</td>
+                        </tr>
+                        <tr>
+                            <td><code>src/lametric/device_apps.py</code></td>
+                            <td>Installed app models</td>
+                        </tr>
+                        <tr>
+                            <td><code>src/lametric/device_configs.py</code></td>
+                            <td>Request payload models (display, screensaver, stream)</td>
+                        </tr>
+                        <tr>
+                            <td><code>src/lametric/const.py</code></td>
+                            <td>Enums and protocol constants</td>
+                        </tr>
+                        <tr>
+                            <td><code>src/lametric/exceptions.py</code></td>
+                            <td>Custom exception hierarchy</td>
+                        </tr>
+                        <tr>
+                            <td><code>tests/</code></td>
+                            <td>Unit tests</td>
+                        </tr>
+                        <tr>
+                            <td><code>tests/runtime_test.py</code></td>
+                            <td>Live integration test (requires a real device)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Runtime integration test</h3>
+                <p>Exercises every public API method against a real device and restores write-only state after each
+                    test:</p>
+                <pre><code>python tests/runtime_test.py --host &lt;ip&gt; --api-key &lt;key&gt;</code></pre>
+            </section>
+
+        </main>
+    </div>
+</body>
+
+</html>
