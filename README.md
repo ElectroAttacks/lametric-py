@@ -1,5 +1,11 @@
 # lametric-py
 
+[![CI](https://github.com/ElectroAttacks/lametric-py/actions/workflows/ci.yml/badge.svg)](https://github.com/ElectroAttacks/lametric-py/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/lametric-py)](https://pypi.org/project/lametric-py/)
+[![Python](https://img.shields.io/pypi/pyversions/lametric-py)](https://pypi.org/project/lametric-py/)
+[![License](https://img.shields.io/github/license/ElectroAttacks/lametric-py)](LICENSE)
+[![Docs](https://img.shields.io/badge/docs-electroattacks.github.io-blue)](https://electroattacks.github.io/lametric-py/)
+
 Async Python client for LaMetric devices and the LaMetric cloud API.
 
 The package wraps the documented local device API, notification models, and the
@@ -24,7 +30,7 @@ LaMetric Streaming Protocol (LMSP) used by LaMetric SKY devices.
 This repository is currently set up as a source install.
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/ElectroAttacks/lametric-py.git
 cd lametric-py
 uv sync --dev
 ```
@@ -155,9 +161,13 @@ The package re-exports its public surface from `lametric`.
 
 ## Documentation
 
-- `docs/usage.md` for the local device and cloud clients
-- `docs/streaming.md` for LMSP details and the packet format used by `send_stream_data`
-- `docs/development.md` for local development, linting, typing, and tests
+Full documentation is available at **[electroattacks.github.io/lametric-py](https://electroattacks.github.io/lametric-py/)**.
+
+Source pages:
+
+- [`docs/usage.md`](docs/usage.md) — local device and cloud clients
+- [`docs/streaming.md`](docs/streaming.md) — LMSP details and packet format
+- [`docs/development.md`](docs/development.md) — linting, typing, and tests
 
 ## Development
 
