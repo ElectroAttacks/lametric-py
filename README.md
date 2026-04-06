@@ -166,9 +166,9 @@ Full documentation is available at **[electroattacks.github.io/lametric-py](http
 
 Source pages:
 
-- [`docs/usage.md`](docs/usage.md) — local device and cloud clients
-- [`docs/streaming.md`](docs/streaming.md) — LMSP details and packet format
-- [`docs/development.md`](docs/development.md) — linting, typing, and tests
+- [`docs/usage.md`](https://electroattacks.github.io/lametric-py/usage) — local device and cloud clients
+- [`docs/streaming.md`](https://electroattacks.github.io/lametric-py/streaming) — LMSP details and packet format
+- [`docs/development.md`](https://electroattacks.github.io/lametric-py/development) — linting, typing, and tests
 
 ## Development
 
@@ -182,3 +182,7 @@ uv run pytest
 ```
 
 The CI workflow runs Ruff, mypy, pytest, coverage export, and semantic-release.
+
+## Support
+
+If this package is useful to you, consider [sponsoring the project](https://github.com/sponsors/ElectroAttacks). ❤️
