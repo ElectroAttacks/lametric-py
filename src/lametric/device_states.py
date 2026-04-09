@@ -129,7 +129,7 @@ class DeviceWiFiState(DataClassORJSONMixin):
 class DeviceSoftwareUpdate(DataClassORJSONMixin):
     """Software update information exposed by the device."""
 
-    version: AwesomeVersion
+    version: AwesomeVersion = field(metadata=field_options(deserialize=AwesomeVersion))
 
 
 @dataclass(kw_only=True)
@@ -139,7 +139,9 @@ class DeviceState(DataClassORJSONMixin):
     cloud_id: int = field(metadata=field_options(alias="id"))
     name: str
     serial_number: str
-    os_version: AwesomeVersion
+    os_version: AwesomeVersion = field(
+        metadata=field_options(deserialize=AwesomeVersion)
+    )
     model: DeviceModels
     mode: DeviceModes
     audio: DeviceAudioState
@@ -184,7 +186,7 @@ class StreamState(DataClassORJSONMixin):
     """LMSP stream state returned by GET and PUT /api/v2/device/stream."""
 
     protocol: str
-    version: AwesomeVersion
+    version: AwesomeVersion = field(metadata=field_options(deserialize=AwesomeVersion))
     port: int
     status: str
     canvas: Canvas

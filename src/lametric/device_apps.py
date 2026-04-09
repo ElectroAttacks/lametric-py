@@ -40,7 +40,7 @@ class App(DataClassORJSONMixin):
 
     id: str = field(metadata=field_options(alias="package"))
     vendor: str
-    version: AwesomeVersion
+    version: AwesomeVersion = field(metadata=field_options(deserialize=AwesomeVersion))
     version_code: int
     title: str | None = None
     widgets: dict[str, Widget]
