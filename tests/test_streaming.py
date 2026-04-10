@@ -36,6 +36,17 @@ def test_start_stream_returns_session_id_from_response_mapping() -> None:
                 method: str = "GET",
                 data: dict[str, Any] | None = None,
             ) -> Any:
+                if uri == "/api/v2/device/stream":
+                    return {
+                        "protocol": "lmsp",
+                        "version": "1.0",
+                        "port": 9999,
+                        "status": "receiving",
+                        "canvas": {
+                            "pixel": {"size": {"width": 8, "height": 8}},
+                            "triangle": {"size": {"width": 8, "height": 8}},
+                        },
+                    }
                 assert uri == "/api/v2/device/stream/start"
                 assert method == "PUT"
                 assert data is not None

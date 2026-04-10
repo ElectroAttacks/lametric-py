@@ -38,6 +38,7 @@ class LaMetricDevice:
     session: aiohttp.client.ClientSession | None = None
     logger: Logger | None = None
     _close_session: bool = False
+    _stream_state_cache: StreamState | None = None
 
     @backoff.on_exception(
         backoff.expo, LaMetricConnectionError, max_tries=3, logger=logger
@@ -306,6 +307,7 @@ class LaMetricDevice:
         if response["success"]["data"] is None:
             return None
 
+        self._stream_state_cache = await self.stream_state
         return cast(str, response["success"]["data"]["session_id"])
 
     async def stop_stream(self) -> None:
@@ -313,6 +315,7 @@ class LaMetricDevice:
         await self._handle_api_request(
             uri="/api/v2/device/stream/stop", method=hdrs.METH_PUT
         )
+        self._stream_state_cache = None
 
     async def send_stream_data(self, session_id: str, rgb888_data: bytes) -> None:
         """Send a single LMSP UDP frame to the device.
@@ -326,7 +329,7 @@ class LaMetricDevice:
             rgb888_data: Raw pixel data in RGB888 format (R, G, B per pixel),
                 covering the full canvas (``width * height * 3`` bytes).
         """
-        stream_state = await self.stream_state
+        stream_state = self._stream_state_cache or await self.stream_state
 
         port = stream_state.port
         width = stream_state.canvas.pixel.size.width
