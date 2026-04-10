@@ -15,7 +15,7 @@ from aiohttp import hdrs
 from aiohttp.helpers import BasicAuth
 from yarl import URL
 
-from .const import BrightnessMode
+from .const import BrightnessMode, CanvasRenderMode
 from .device_apps import App
 from .device_configs import ScreensaverConfig, StreamConfig
 from .device_notifications import Notification
@@ -39,6 +39,7 @@ class LaMetricDevice:
     logger: Logger | None = None
     _close_session: bool = False
     _stream_state_cache: StreamState | None = None
+    _stream_render_mode_cache: CanvasRenderMode | None = None
 
     @backoff.on_exception(
         backoff.expo, LaMetricConnectionError, max_tries=3, logger=logger
@@ -308,6 +309,7 @@ class LaMetricDevice:
             return None
 
         self._stream_state_cache = await self.stream_state
+        self._stream_render_mode_cache = stream_config.render_mode
         return cast(str, response["success"]["data"]["session_id"])
 
     async def stop_stream(self) -> None:
@@ -316,6 +318,7 @@ class LaMetricDevice:
             uri="/api/v2/device/stream/stop", method=hdrs.METH_PUT
         )
         self._stream_state_cache = None
+        self._stream_render_mode_cache = None
 
     async def send_stream_data(self, session_id: str, rgb888_data: bytes) -> None:
         """Send a single LMSP UDP frame to the device.
@@ -330,10 +333,17 @@ class LaMetricDevice:
                 covering the full canvas (``width * height * 3`` bytes).
         """
         stream_state = self._stream_state_cache or await self.stream_state
+        render_mode = self._stream_render_mode_cache
+
+        canvas_area = (
+            stream_state.canvas.triangle
+            if render_mode == CanvasRenderMode.TRIANGLE
+            else stream_state.canvas.pixel
+        )
 
         port = stream_state.port
-        width = stream_state.canvas.pixel.size.width
-        height = stream_state.canvas.pixel.size.height
+        width = canvas_area.size.width
+        height = canvas_area.size.height
         protocol_bytes = stream_state.protocol.encode().ljust(4, b"\x00")[:4]
         version = int(str(stream_state.version.major))
         session_bytes = bytes.fromhex(session_id)
