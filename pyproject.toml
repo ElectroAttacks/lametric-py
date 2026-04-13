@@ -18,7 +18,7 @@ dependencies = [
     "backoff>=2.0",
     "mashumaro>=3.17.0",
     "awesomeversion>=25.8.0",
-    "orjson>=3.11.3",
+    "orjson>=3.11.8",
 ]
 requires-python = ">=3.14"
 readme = "README.md"
