@@ -34,7 +34,7 @@ dev = [
     "mypy>=2.1.0",
     "ruff>=0.15.20",
     "pre-commit>=4.6.0",
-    "python-semantic-release>=10.5.3",
+    "python-semantic-release>=10.6.0",
     "commitizen>=4.16.4",
 ]
 
