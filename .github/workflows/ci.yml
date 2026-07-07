@@ -82,7 +82,7 @@ jobs:
 
       - name: Semantic Release
         id: release
-        uses: python-semantic-release/python-semantic-release@v10.6.0
+        uses: python-semantic-release/python-semantic-release@v10.6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           commit: false
@@ -105,7 +105,7 @@ jobs:
 
       - name: Upload Release Assets
         if: steps.release.outputs.released == 'true'
-        uses: python-semantic-release/publish-action@v10.6.0
+        uses: python-semantic-release/publish-action@v10.6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ steps.release.outputs.tag }}
