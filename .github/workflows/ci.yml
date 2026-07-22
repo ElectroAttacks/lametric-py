@@ -168,10 +168,10 @@ jobs:
 
       - name: Upload Release Assets
         if: needs.semantic-release.outputs.released == 'true'
-        uses: python-semantic-release/publish-action@v10.6.1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ needs.semantic-release.outputs.tag }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.semantic-release.outputs.tag }}
+        run: gh release upload "$TAG" dist/* --clobber
 
   publish-pypi:
     name: "Stage 4 · Publish PyPI"
