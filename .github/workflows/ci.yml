@@ -79,6 +79,7 @@ jobs:
     outputs:
       released: ${{ steps.release.outputs.released || 'false' }}
       tag: ${{ steps.release.outputs.tag }}
+      # release_notes is consumed by Stage 3 to populate the GitHub release body
       release_notes: ${{ steps.release.outputs.release_notes }}
     steps:
       - uses: actions/checkout@v7
@@ -150,6 +151,8 @@ jobs:
         if: steps.release.outputs.released == 'true'
         env:
           NOTES: ${{ steps.release.outputs.release_notes }}
+        # Use printf with a fixed format string so special chars in $NOTES are never
+        # interpreted as format specifiers; avoids a trailing newline that echo adds.
         run: printf '%s' "$NOTES" > release-notes.md
 
       - name: Upload Release Notes Artifact
