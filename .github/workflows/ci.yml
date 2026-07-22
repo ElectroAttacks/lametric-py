@@ -79,6 +79,8 @@ jobs:
     outputs:
       released: ${{ steps.release.outputs.released || 'false' }}
       tag: ${{ steps.release.outputs.tag }}
+      # release_notes is consumed by Stage 3 to populate the GitHub release body
+      release_notes: ${{ steps.release.outputs.release_notes }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -92,6 +94,7 @@ jobs:
           commit: false
           changelog: false
           build: false
+          vcs_release: false
 
       - name: Normalize version for build
         if: steps.release.outputs.released != 'true'
@@ -144,6 +147,22 @@ jobs:
           path: dist
           if-no-files-found: error
 
+      - name: Save Release Notes
+        if: steps.release.outputs.released == 'true'
+        env:
+          NOTES: ${{ steps.release.outputs.release_notes }}
+        # Use printf with a fixed format string so special chars in $NOTES are never
+        # interpreted as format specifiers; avoids a trailing newline that echo adds.
+        run: printf '%s' "$NOTES" > release-notes.md
+
+      - name: Upload Release Notes Artifact
+        if: steps.release.outputs.released == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-notes
+          path: release-notes.md
+          if-no-files-found: error
+
   # ── Stage 3 ─────────────────────────────────────────────────────────────────
   publish-github:
     name: "Stage 3 · Publish GitHub"
@@ -153,12 +172,6 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout repository
-        if: needs.semantic-release.outputs.released == 'true'
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-
       - name: Download Distribution Artifacts
         if: needs.semantic-release.outputs.released == 'true'
         uses: actions/download-artifact@v8
@@ -166,12 +179,18 @@ jobs:
           name: dist
           path: dist
 
-      - name: Upload Release Assets
+      - name: Download Release Notes
+        if: needs.semantic-release.outputs.released == 'true'
+        uses: actions/download-artifact@v8
+        with:
+          name: release-notes
+
+      - name: Create GitHub Release with Assets
         if: needs.semantic-release.outputs.released == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ needs.semantic-release.outputs.tag }}
-        run: gh release upload "$TAG" dist/* --clobber
+        run: gh release create "$TAG" dist/* --notes-file release-notes.md --repo "$GITHUB_REPOSITORY"
 
   publish-pypi:
     name: "Stage 4 · Publish PyPI"
