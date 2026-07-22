@@ -12,13 +12,11 @@ on:
 
 # ─── Stage 1: pre-commit ─────────────────────────────────────────────────────
 # JSON/YAML parsing+linting, Ruff, Mypy, Pytest.
-# ─── Stage 2: build-dist ─────────────────────────────────────────────────────
-# Builds package distributions once and uploads them as workflow artifact.
-# ─── Stage 3: semantic-release ───────────────────────────────────────────────
-# Calculates and creates release/tag metadata.
-# ─── Stage 4: publish-github ─────────────────────────────────────────────────
+# ─── Stage 2: semantic-release ───────────────────────────────────────────────
+# Calculates release/tag metadata, then builds distributions once and uploads artifact.
+# ─── Stage 3: publish-github ─────────────────────────────────────────────────
 # Uploads built artifacts to GitHub Release when a release exists.
-# ─── Stage 5: publish-pypi ───────────────────────────────────────────────────
+# ─── Stage 4: publish-pypi ───────────────────────────────────────────────────
 # Always publishes on push to main (independent of semantic-release outputs).
 
 jobs:
@@ -70,38 +68,9 @@ jobs:
           fail_ci_if_error: false
 
   # ── Stage 2 ─────────────────────────────────────────────────────────────────
-  build-dist:
-    name: "Stage 2 · Build & Upload Dist Artifact"
-    needs: pre-commit
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          enable-cache: true
-
-      - name: Set up Python 3.14
-        run: uv python install 3.14
-
-      - name: Build distributions
-        run: uv build
-
-      - name: Upload Distribution Artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: dist
-          path: dist
-          if-no-files-found: error
-
-  # ── Stage 3 ─────────────────────────────────────────────────────────────────
   semantic-release:
-    name: "Stage 3 · Semantic Release"
-    needs: build-dist
+    name: "Stage 2 · Semantic Release & Build Dist"
+    needs: pre-commit
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     concurrency: release
@@ -124,9 +93,27 @@ jobs:
           changelog: false
           build: false
 
-  # ── Stage 4 ─────────────────────────────────────────────────────────────────
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Set up Python 3.14
+        run: uv python install 3.14
+
+      - name: Build distributions
+        run: uv build
+
+      - name: Upload Distribution Artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist
+          if-no-files-found: error
+
+  # ── Stage 3 ─────────────────────────────────────────────────────────────────
   publish-github:
-    name: "Stage 4 · Publish GitHub"
+    name: "Stage 3 · Publish GitHub"
     needs: semantic-release
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -148,7 +135,7 @@ jobs:
           tag: ${{ needs.semantic-release.outputs.tag }}
 
   publish-pypi:
-    name: "Stage 5 · Publish PyPI"
+    name: "Stage 4 · Publish PyPI"
     needs: publish-github
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
