@@ -153,6 +153,12 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Checkout repository
+        if: needs.semantic-release.outputs.released == 'true'
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
       - name: Download Distribution Artifacts
         if: needs.semantic-release.outputs.released == 'true'
         uses: actions/download-artifact@v8
