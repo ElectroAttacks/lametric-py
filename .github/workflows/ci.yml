@@ -93,6 +93,39 @@ jobs:
           changelog: false
           build: false
 
+      - name: Normalize version for build
+        if: steps.release.outputs.released != 'true'
+        run: |
+          latest_tag="$(git describe --tags --abbrev=0 | sed 's/^v//')"
+          if [ -z "$latest_tag" ]; then
+            echo "No git tag found, keeping pyproject version as-is."
+            exit 0
+          fi
+
+          export LATEST_TAG="$latest_tag"
+
+          python - <<'PY'
+          import os
+          import pathlib
+          import re
+
+          pyproject = pathlib.Path("pyproject.toml")
+          content = pyproject.read_text(encoding="utf-8")
+          latest = os.environ["LATEST_TAG"].strip()
+
+          updated, count = re.subn(
+              r'(?m)^version\s*=\s*"[^"]+"\s*$',
+              f'version = "{latest}"',
+              content,
+              count=1,
+          )
+          if count != 1:
+              raise SystemExit("Could not locate project.version in pyproject.toml")
+
+          pyproject.write_text(updated, encoding="utf-8")
+          print(f"Set build version in pyproject.toml to {latest}")
+          PY
+
       - name: Install uv
         uses: astral-sh/setup-uv@v7
         with:
