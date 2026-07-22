@@ -517,7 +517,7 @@ requires-dist = [
     { name = "backoff", specifier = ">=2.2.1" },
     { name = "mashumaro", specifier = ">=3.22" },
     { name = "orjson", specifier = ">=3.11.9" },
-    { name = "yarl", specifier = ">=1.24.5" },
+    { name = "yarl", specifier = ">=1.24.2" },
 ]
 
 [package.metadata.requires-dev]
