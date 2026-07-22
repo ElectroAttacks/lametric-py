@@ -255,7 +255,7 @@ class LaMetricDevice:
 
         await self._handle_api_request(
             uri=f"/api/v2/device/apps/{app_id}/widgets/{widget_id}/actions",
-            method=hdrs.METH_PUT,
+            method=hdrs.METH_POST,
             data=data,
         )
 

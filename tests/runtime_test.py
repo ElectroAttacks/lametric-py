@@ -87,6 +87,62 @@ async def test_installed_apps(
     return apps
 
 
+async def test_activate_action(device: LaMetricDevice) -> None:
+    apps: dict[str, Any] | None = await check(
+        "GET /api/v2/device/apps  \u2192  installed_apps (for activate_action)",
+        device.installed_apps,
+    )
+    if not apps:
+        print("  SKIP  activate_action  (no installed apps found)")
+        return
+
+    app_id: str | None = None
+    widget_id: str | None = None
+    action_id: str | None = None
+
+    # Prefer built-in apps to mirror the real-world issue report.
+    for candidate_app_id, app in apps.items():
+        if not candidate_app_id.startswith("com.lametric."):
+            continue
+        actions = getattr(app, "actions", None) or {}
+        widgets = getattr(app, "widgets", None) or {}
+        if not actions or not widgets:
+            continue
+
+        for candidate_action_id, params in actions.items():
+            action_params = params or {}
+            if any(
+                getattr(param, "required", False) for param in action_params.values()
+            ):
+                continue
+
+            app_id = candidate_app_id
+            action_id = candidate_action_id
+            widget_id = next(iter(widgets.keys()))
+            break
+
+        if app_id is not None:
+            break
+
+    if app_id is None or widget_id is None or action_id is None:
+        print(
+            "  SKIP  activate_action  "
+            "(no built-in app action without required params found)"
+        )
+        return
+
+    await check(
+        "POST /api/v2/device/apps/{app}/widgets/{widget}/actions  "
+        "\u2192  activate_action(activate=True)",
+        device.activate_action(
+            app_id=app_id,
+            widget_id=widget_id,
+            action_id=action_id,
+            visible=True,
+        ),
+    )
+
+
 async def test_notifications(device: LaMetricDevice) -> None:
     await check(
         "GET /api/v2/device/notifications  →  notifications",
@@ -240,6 +296,8 @@ async def run(host: str, api_key: str) -> int:
         await test_bluetooth(device, state)
         print()
         await test_app_navigation(device)
+        print()
+        await test_activate_action(device)
         print()
         await test_stream_state(device)
 
