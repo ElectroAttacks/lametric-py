@@ -31,7 +31,7 @@ license = { text = "MIT" }
 dev = [
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
-    "mypy>=2.3.0",
+    "mypy>=2.3.1",
     "ruff>=0.16.3",
     "pre-commit>=4.6.2",
     "python-semantic-release>=10.6.1",
