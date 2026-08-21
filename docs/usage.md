@@ -111,7 +111,7 @@ await device.dismiss_all_notifications()
 #### Reading the queue
 
 ```python
-queued = await device.notifications          # list[Notification]
+queued = await device.notifications  # list[Notification]
 current = await device.current_notification  # Notification | None
 ```
 
@@ -139,7 +139,7 @@ inferred automatically:
 ```python
 from lametric import AlarmSound, BuiltinSound, NotificationSound
 
-alert_sound = BuiltinSound(id=AlarmSound.ALARM1)        # category set to ALARMS
+alert_sound = BuiltinSound(id=AlarmSound.ALARM1)  # category set to ALARMS
 notify_sound = BuiltinSound(id=NotificationSound.CASH)  # category set to NOTIFICATIONS
 ```
 
@@ -148,7 +148,10 @@ notify_sound = BuiltinSound(id=NotificationSound.CASH)  # category set to NOTIFI
 ```python
 from lametric import WebSound
 
-sound = WebSound(url="https://example.com/alert.mp3", fallback=BuiltinSound(id=NotificationSound.NOTIFICATION))
+sound = WebSound(
+    url="https://example.com/alert.mp3",
+    fallback=BuiltinSound(id=NotificationSound.NOTIFICATION),
+)
 ```
 
 ## Cloud Client
@@ -163,8 +166,8 @@ from lametric import LaMetricCloud
 
 async def main() -> None:
     async with LaMetricCloud(token="developer-token") as cloud:
-        user = await cloud.current_user   # CloudUser
-        devices = await cloud.devices     # list[CloudDevice]
+        user = await cloud.current_user  # CloudUser
+        devices = await cloud.devices  # list[CloudDevice]
         print(user.name)
         print([device.name for device in devices])
 

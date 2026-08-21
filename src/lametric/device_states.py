@@ -110,14 +110,17 @@ class DeviceWiFiState(DataClassORJSONMixin):
 
     available: bool
     active: bool
-    encryption: str
+    # Some firmware variants omit these fields from the /device payload.
+    encryption: str | None = None
     netmask: IPv4Address
     # Renamed field to be more descriptive
     ip_address_mode: str = field(metadata=field_options(alias="mode"))
     # Endpoint /device differs from documentation and /wifi Endpoint
     ipv4: IPv4Address = field(metadata=field_options(alias="ip"))
     mac: str = field(metadata=field_options(alias="address"))
-    signal_strength: int = field(metadata=field_options(alias="strength"))
+    signal_strength: int | None = field(
+        default=None, metadata=field_options(alias="strength")
+    )
     ssid: str = field(metadata=field_options(alias="essid"))
 
     class Config(BaseConfig):

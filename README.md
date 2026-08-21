@@ -53,9 +53,9 @@ from lametric import LaMetricDevice
 
 
 async def main() -> None:
-	async with LaMetricDevice(host="192.168.1.42", api_key="device-api-key") as device:
-		state = await device.state
-		print(state.name)
+    async with LaMetricDevice(host="192.168.1.42", api_key="device-api-key") as device:
+        state = await device.state
+        print(state.name)
 
 
 asyncio.run(main())
@@ -67,28 +67,28 @@ asyncio.run(main())
 import asyncio
 
 from lametric import (
-	BuiltinSound,
-	LaMetricDevice,
-	Notification,
-	NotificationData,
-	NotificationPriority,
-	NotificationSound,
-	SimpleFrame,
+    BuiltinSound,
+    LaMetricDevice,
+    Notification,
+    NotificationData,
+    NotificationPriority,
+    NotificationSound,
+    SimpleFrame,
 )
 
 
 async def main() -> None:
-	notification = Notification(
-		priority=NotificationPriority.INFO,
-		model=NotificationData(
-			frames=[SimpleFrame(text="Deploy finished")],
-			sound=BuiltinSound(id=NotificationSound.POSITIVE1),
-		),
-	)
+    notification = Notification(
+        priority=NotificationPriority.INFO,
+        model=NotificationData(
+            frames=[SimpleFrame(text="Deploy finished")],
+            sound=BuiltinSound(id=NotificationSound.POSITIVE1),
+        ),
+    )
 
-	async with LaMetricDevice(host="192.168.1.42", api_key="device-api-key") as device:
-		notification_id = await device.send_notification(notification)
-		print(notification_id)
+    async with LaMetricDevice(host="192.168.1.42", api_key="device-api-key") as device:
+        notification_id = await device.send_notification(notification)
+        print(notification_id)
 
 
 asyncio.run(main())
@@ -103,10 +103,10 @@ from lametric import LaMetricCloud
 
 
 async def main() -> None:
-	async with LaMetricCloud(token="developer-token") as cloud:
-		user = await cloud.current_user
-		devices = await cloud.devices
-		print(user.email, len(devices))
+    async with LaMetricCloud(token="developer-token") as cloud:
+        user = await cloud.current_user
+        devices = await cloud.devices
+        print(user.email, len(devices))
 
 
 asyncio.run(main())
@@ -118,34 +118,37 @@ asyncio.run(main())
 import asyncio
 
 from lametric import (
-	CanvasFillType,
-	CanvasPostProcess,
-	CanvasPostProcessType,
-	CanvasRenderMode,
-	LaMetricDevice,
-	StreamConfig,
+    CanvasFillType,
+    CanvasPostProcess,
+    CanvasPostProcessType,
+    CanvasRenderMode,
+    LaMetricDevice,
+    StreamConfig,
 )
 
 
 async def main() -> None:
-	config = StreamConfig(
-		fill_type=CanvasFillType.SCALE,
-		render_mode=CanvasRenderMode.PIXEL,
-		post_process=CanvasPostProcess(type=CanvasPostProcessType.NONE),
-	)
+    config = StreamConfig(
+        fill_type=CanvasFillType.SCALE,
+        render_mode=CanvasRenderMode.PIXEL,
+        post_process=CanvasPostProcess(type=CanvasPostProcessType.NONE),
+    )
 
-	async with LaMetricDevice(host="192.168.1.42", api_key="device-api-key") as device:
-		session_id = await device.start_stream(config)
-		if session_id is None:
-			return
+    async with LaMetricDevice(host="192.168.1.42", api_key="device-api-key") as device:
+        session_id = await device.start_stream(config)
+        if session_id is None:
+            return
 
-		stream_state = await device.stream_state
-		frame = bytes(
-			[255, 0, 0]
-			* (stream_state.canvas.pixel.size.width * stream_state.canvas.pixel.size.height)
-		)
-		await device.send_stream_data(session_id, frame)
-		await device.stop_stream()
+        stream_state = await device.stream_state
+        frame = bytes(
+            [255, 0, 0]
+            * (
+                stream_state.canvas.pixel.size.width
+                * stream_state.canvas.pixel.size.height
+            )
+        )
+        await device.send_stream_data(session_id, frame)
+        await device.stop_stream()
 
 
 asyncio.run(main())

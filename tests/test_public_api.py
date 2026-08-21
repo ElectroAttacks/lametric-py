@@ -1,6 +1,12 @@
+import tomllib
 from importlib.metadata import PackageNotFoundError, version
+from pathlib import Path
+
+from packaging.requirements import Requirement
+from packaging.version import Version
 
 from lametric import (
+    DeviceState,
     LaMetricCloud,
     LaMetricDevice,
     Notification,
@@ -26,3 +32,72 @@ def test_public_api_exposes_version() -> None:
         expected_version = "0.0.0"
 
     assert __version__ == expected_version
+
+
+def _next_patch_version(version_str: str) -> str:
+    release = list(Version(version_str).release)
+    release[-1] += 1
+    return ".".join(str(part) for part in release)
+
+
+def test_ha_core_compatible_dependency_versions() -> None:
+    pyproject = Path(__file__).resolve().parents[1] / "pyproject.toml"
+    data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+
+    maximum_versions = {
+        "aiohttp": "3.14.3",
+        "yarl": "1.24.5",
+        "awesomeversion": "25.8.0",
+        "orjson": "3.12.0",
+    }
+
+    for dep in data["project"]["dependencies"]:
+        requirement = Requirement(dep)
+        if requirement.name not in maximum_versions:
+            continue
+
+        upper_bound = None
+        for spec in requirement.specifier:
+            if spec.operator in {"<", "<="}:
+                upper_bound = spec.version
+                break
+
+        assert upper_bound is not None
+        assert upper_bound == _next_patch_version(maximum_versions[requirement.name])
+
+
+def test_device_state_allows_missing_wifi_encryption_and_signal_strength() -> None:
+    payload = {
+        "id": 42,
+        "name": "Sky",
+        "serial_number": "ABC123",
+        "os_version": "3.2.7",
+        "model": "sa5",
+        "mode": "auto",
+        "audio": {"available": True},
+        "bluetooth": {"available": True},
+        "display": {
+            "on": True,
+            "width": 280,
+            "height": 280,
+            "type": "color",
+            "brightness": 50,
+            "brightness_mode": "manual",
+            "brightness_range": {"min": 0, "max": 100},
+            "brightness_limit": {"min": 0, "max": 100},
+        },
+        "wifi": {
+            "available": True,
+            "active": True,
+            "netmask": "255.255.255.0",
+            "mode": "dhcp",
+            "ip": "192.168.1.10",
+            "address": "AA:BB:CC:DD:EE:FF",
+            "essid": "OfficeWiFi",
+        },
+    }
+
+    state = DeviceState.from_dict(payload)
+
+    assert state.wifi.encryption is None
+    assert state.wifi.signal_strength is None
