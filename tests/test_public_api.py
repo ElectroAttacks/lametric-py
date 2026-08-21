@@ -3,7 +3,6 @@ from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
 from packaging.requirements import Requirement
-from packaging.version import Version
 
 from lametric import (
     DeviceState,
@@ -34,36 +33,43 @@ def test_public_api_exposes_version() -> None:
     assert __version__ == expected_version
 
 
-def _next_patch_version(version_str: str) -> str:
-    release = list(Version(version_str).release)
-    release[-1] += 1
-    return ".".join(str(part) for part in release)
-
-
 def test_ha_core_compatible_dependency_versions() -> None:
+    """Test that dependencies have minimum versions but no upper bounds.
+
+    This ensures compatibility with Home Assistant which pins its dependencies.
+    By not setting upper bounds, we allow pip/uv to resolve compatible versions.
+    """
     pyproject = Path(__file__).resolve().parents[1] / "pyproject.toml"
     data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
 
-    maximum_versions = {
+    # Minimum versions we require
+    minimum_versions = {
         "aiohttp": "3.14.3",
         "yarl": "1.24.5",
         "awesomeversion": "25.8.0",
-        "orjson": "3.12.0",
+        "orjson": "3.10.0",  # Flexible to support HA's 3.11.9
     }
 
     for dep in data["project"]["dependencies"]:
         requirement = Requirement(dep)
-        if requirement.name not in maximum_versions:
+        if requirement.name not in minimum_versions:
             continue
 
-        upper_bound = None
-        for spec in requirement.specifier:
-            if spec.operator in {"<", "<="}:
-                upper_bound = spec.version
-                break
+        # Check minimum version is set
+        has_lower_bound = False
+        has_upper_bound = False
 
-        assert upper_bound is not None
-        assert upper_bound == _next_patch_version(maximum_versions[requirement.name])
+        for spec in requirement.specifier:
+            if spec.operator in {">=", ">"}:
+                has_lower_bound = True
+                assert spec.version >= minimum_versions[requirement.name]
+            if spec.operator in {"<", "<="}:
+                has_upper_bound = True
+
+        assert has_lower_bound, f"{requirement.name} should have a lower bound"
+        assert not has_upper_bound, (
+            f"{requirement.name} should not have an upper bound for HA compatibility"
+        )
 
 
 def test_device_state_allows_missing_wifi_encryption_and_signal_strength() -> None:
