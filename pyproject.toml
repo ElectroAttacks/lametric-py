@@ -33,7 +33,7 @@ dev = [
     "pytest-cov>=7.1.0",
     "mypy>=2.4.0",
     "ruff>=0.17.0",
-    "pre-commit>=4.6.2",
+    "pre-commit>=4.7.0",
     "python-semantic-release>=10.7.0",
     "commitizen>=4.19.2",
 ]
