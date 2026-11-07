@@ -15,13 +15,10 @@ on:
 # JSON/YAML parsing+linting, Ruff, Mypy, Pytest.
 # ─── Stage 2: semantic-release ───────────────────────────────────────────────
 # Calculates release/tag metadata, then builds distributions once and uploads artifact.
-# On the nightly schedule or a manual run, forces a patch release if commits
-# (e.g. Dependabot "chore:" bumps) have landed since the last tag without
-# triggering a release.
 # ─── Stage 3: publish-github ─────────────────────────────────────────────────
 # Uploads built artifacts to GitHub Release when a release exists.
 # ─── Stage 4: publish-pypi ────────────────────────────────────────────────
-# Always publishes on push to main, a nightly run, or a manual dispatch.
+# Always publishes on push to main or a manual dispatch (independent of semantic-release outputs).
 
 jobs:
   # ── Stage 1 ─────────────────────────────────────────────────────────────────
@@ -76,7 +73,6 @@ jobs:
     name: "Stage 2 · Semantic Release & Build Dist"
     needs: pre-commit
     if: >-
-      github.event_name == 'schedule' ||
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
@@ -93,25 +89,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Force patch release on nightly schedule or manual run
-        id: force-check
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        # Forces a patch bump when commits since the last tag never matched a
-        # release-triggering type (e.g. Dependabot's "chore: bump ..." commits).
-        run: |
-          latest_tag="$(git describe --tags --abbrev=0 2>/dev/null || true)"
-          if [ -z "$latest_tag" ]; then
-            pending=1
-          else
-            pending="$(git rev-list "${latest_tag}..HEAD" --count)"
-          fi
-
-          if [ "$pending" -gt 0 ]; then
-            echo "force=patch" >> "$GITHUB_OUTPUT"
-          else
-            echo "force=" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Semantic Release
         id: release
         uses: python-semantic-release/python-semantic-release@v10.7.0
@@ -121,7 +98,6 @@ jobs:
           changelog: false
           build: false
           vcs_release: false
-          force: ${{ steps.force-check.outputs.force }}
 
       - name: Normalize version for build
         if: steps.release.outputs.released != 'true'
@@ -195,7 +171,6 @@ jobs:
     name: "Stage 3 · Publish GitHub"
     needs: semantic-release
     if: >-
-      github.event_name == 'schedule' ||
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
@@ -226,7 +201,6 @@ jobs:
     name: "Stage 4 · Publish PyPI"
     needs: publish-github
     if: >-
-      github.event_name == 'schedule' ||
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest

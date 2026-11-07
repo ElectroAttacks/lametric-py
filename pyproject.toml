@@ -81,7 +81,8 @@ version_toml = ["pyproject.toml:project.version"]
 major_on_zero = false
 
 [tool.semantic_release.commit_parser_options]
-patch_tags = ["fix", "perf", "refactor"]
+# "chore" is included so Dependabot's "chore: bump ..." commits actually cut a release.
+patch_tags = ["fix", "perf", "refactor", "chore"]
 
 [tool.semantic_release.changelog]
 exclude_commit_patterns = ["chore", "ci"]
