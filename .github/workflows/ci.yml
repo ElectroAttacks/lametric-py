@@ -9,17 +9,19 @@ on:
     branches: [main]
   schedule:
     - cron: "0 0 * * *"
+  workflow_dispatch:
 
 # ─── Stage 1: pre-commit ─────────────────────────────────────────────────────
 # JSON/YAML parsing+linting, Ruff, Mypy, Pytest.
 # ─── Stage 2: semantic-release ───────────────────────────────────────────────
 # Calculates release/tag metadata, then builds distributions once and uploads artifact.
-# On the nightly schedule, forces a patch release if commits (e.g. Dependabot
-# "chore:" bumps) have landed since the last tag without triggering a release.
+# On the nightly schedule or a manual run, forces a patch release if commits
+# (e.g. Dependabot "chore:" bumps) have landed since the last tag without
+# triggering a release.
 # ─── Stage 3: publish-github ─────────────────────────────────────────────────
 # Uploads built artifacts to GitHub Release when a release exists.
-# ─── Stage 4: publish-pypi ───────────────────────────────────────────────────
-# Always publishes on push to main or on a nightly forced release.
+# ─── Stage 4: publish-pypi ────────────────────────────────────────────────
+# Always publishes on push to main, a nightly run, or a manual dispatch.
 
 jobs:
   # ── Stage 1 ─────────────────────────────────────────────────────────────────
@@ -75,6 +77,7 @@ jobs:
     needs: pre-commit
     if: >-
       github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     concurrency: release
@@ -90,9 +93,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Force patch release on nightly schedule
+      - name: Force patch release on nightly schedule or manual run
         id: force-check
-        if: github.event_name == 'schedule'
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         # Forces a patch bump when commits since the last tag never matched a
         # release-triggering type (e.g. Dependabot's "chore: bump ..." commits).
         run: |
@@ -193,6 +196,7 @@ jobs:
     needs: semantic-release
     if: >-
       github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     permissions:
@@ -223,6 +227,7 @@ jobs:
     needs: publish-github
     if: >-
       github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     environment: pypi
